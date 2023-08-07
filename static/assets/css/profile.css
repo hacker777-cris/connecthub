@@ -1,0 +1,58 @@
+/* profile.css */
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+.profile {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.profile img.profile-picture {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile h2 {
+    margin: 10px 0;
+}
+
+.profile .user-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.profile .user-info p {
+    margin: 0;
+}
+
+.profile .user-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.profile .user-stats p {
+    margin: 0;
+}
+
+.profile .bio {
+    margin-bottom: 20px;
+}
+
+.profile .user-posts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 10px;
+}
+
+.profile .user-posts img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
