@@ -9,9 +9,13 @@ from django.views import View
 from base.models import Profile,Post,Like,Follower
 from django.contrib.auth import login,logout
 from django.views.generic import TemplateView
-from django.views.generic import ListView, CreateView
+from django.views.generic import ListView, CreateView,DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from base.forms import PostForm
+from django.views.generic import View
+from django.db.models import F
+
+
 
 @login_required(login_url='signin')
 def homepage(request):
@@ -26,40 +30,44 @@ def homepage(request):
 
         'profile': profile,
         'user_posts' :  user_posts,
-        'profiles':profiles
+        'profiles':profiles,
+        
     }
     return render(request,'index.html',context)
 
 
 @login_required(login_url='signin')
-def profile_view(request):
-    profile = get_object_or_404(Profile, user=request.user)
-    follower_count = Follower.objects.filter(following=profile).count()
-    context = {
-
-        'profile':profile,
-        'follower_count':follower_count
-
-    }
-    return render(request,'profile.html', context)
+def profile_view(request, profile_id):
+    profile = get_object_or_404(Profile, id=profile_id)
     
+    # Get the follower count for the profile
+    follower_count = profile.followers.count()
+    
+    context = {
+        'profile': profile,
+        'follower_count': follower_count,
+    }
+    return render(request, 'profile.html', context)
+
 @login_required(login_url='signin')
-def follow_profile(request,profile_id):
-    profile_to_follow = get_object_or_404(Profile, id=profile_id)
-    follower,_ = Follower.objects.get_or_create(user=request.user)
-    follower.following.add(profile_to_follow)
+def follower(request, profile_id):
+    profile = get_object_or_404(Profile, id=profile_id)
+
+    follower, _ = Follower.objects.get_or_create(user=request.user)
+
+    if profile in follower.following.all():
+        follower.following.remove(profile)
+        messages.success(request, f'You unfollowed {profile.user.username}')
+    else:
+        if request.user == profile.user:
+            messages.info(request, 'You cannot follow yourself')
+        else:
+            follower.following.add(profile)
+            messages.success(request, f'You are now following {profile.user.username}')
+
+    follower.save()
 
     return redirect('profile')
-
-@login_required(login_url='signin')
-def unfollow_profile(request, profile_id):
-    profile_to_unfollow = Profile.objects.get(id=profile_id)
-    follower = get_object_or_404(Follower, user=request.user)
-    follower.following.remove(profile_to_unfollow)
-
-    return redirect('profile')
-
-
 
 class settings_view(View):
     template_name = "setting.html"
@@ -74,8 +82,7 @@ class settings_view(View):
     
 def sign_in(request):
     page = 'signin'
-    # if request.user.is_authenticated:
-    #     return redirect('home')
+   
     
     if request.method == 'POST':
         email=request.POST['email']
@@ -128,20 +135,24 @@ def logoutuser(request):
     logout(request)
     return redirect('home')
 
+def like(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
 
-# def like_object(request, object_id):
-#     liked_object = get_object_or_404(Post, id=object_id)
+    if Like.objects.filter(user=request.user, liked_object=post).exists():
+        like_to_delete = Like.objects.get(user=request.user, liked_object=post)
+        like_to_delete.delete()
+        post.like_count -= 1
+        post.save()
+    else:
+        Like.objects.create(user=request.user, liked_object=post)
+        post.like_count += 1
+        post.save()
 
-#     # Check if the user has already liked the object
-#     try:
-#         Like.objects.get(user=request.user, liked_object=liked_object)
-#         # If the Like already exists, it means the user has already liked the object
-#         return JsonResponse({'message': 'You have already liked this object.'}, status=400)
-#     except Like.DoesNotExist:
-#         # If the Like doesn't exist, create a new Like instance with the user and the object
-#         Like.objects.create(user=request.user, liked_object=liked_object)
-#         return JsonResponse({'message': 'Object liked successfully.'}, status=200)
+    return redirect('home')
 
+
+
+    
 
 
 

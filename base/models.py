@@ -9,11 +9,13 @@ from django.utils import timezone
 User = get_user_model()
 
 
+
 class Profile(models.Model):
     relationship_choices = (
         ('single', 'single'),
         ('married', 'married'),
     )
+    
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     username = models.CharField(blank=False, max_length=100, default='user')
     phone_number = models.CharField(max_length=20)
@@ -34,14 +36,14 @@ class Profile(models.Model):
     )
 
     # Add a new field to store the follower count
-    follower_count = models.PositiveIntegerField(default=0)
+    follower_count = models.IntegerField(default=0)
 
     def __str__(self):
         return f'{self.user.username} Profile'
 
     def save(self, *args, **kwargs):
         # Calculate and update the follower count before saving the profile
-        self.follower_count = self.follower.all().count()
+        self.follower_count = self.followers.all().count()
         
         # save the profile
         super().save(*args, **kwargs)
@@ -52,6 +54,7 @@ class Profile(models.Model):
             output_size = (300, 300)
             img.thumbnail(output_size)
             img.save(self.avatar.path)
+
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     caption = models.CharField(max_length=200)
@@ -59,6 +62,7 @@ class Post(models.Model):
     post_image = models.ImageField(upload_to='profile_posts')
     text = models.TextField()
     created_date = models.DateTimeField(default=timezone.now)
+    like_count = models.IntegerField(default=0)
 
     def publish(self):
         self.published_date = timezone.now()
@@ -81,6 +85,7 @@ class Follower(models.Model):
 
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, default=1)
     liked_object = models.ForeignKey('Post', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
