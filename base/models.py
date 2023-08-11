@@ -42,12 +42,11 @@ class Profile(models.Model):
         return f'{self.user.username} Profile'
 
     def save(self, *args, **kwargs):
-        # Calculate and update the follower count before saving the profile
-        self.follower_count = self.followers.all().count()
-        
-        # save the profile
+        # Save the profile
         super().save(*args, **kwargs)
-
+        
+        # Save the profile
+        super().save(*args, **kwargs)
         # resize the image
         img = Image.open(self.avatar.path)
         if img.height > 300 or img.width > 300:

@@ -16,7 +16,13 @@
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/tailwind.css' %}">
 </head>
-
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
 <body>
 
             <header>
@@ -166,7 +172,7 @@
 
                         <!-- profile -->
 
-                        <a href="{% url 'profile' profile.id %}">
+                        <a href="{% url 'profile' profile_id=profile.id %}">
                             {% if request.user.is_authenticated %}
                             <img src="{{ profile.avatar.url }}" class="header-avatar" alt="profile image">
                             {% else %}
@@ -178,7 +184,7 @@
                                 <li><a href="{% url 'settings' %}"> Account setting </a> </li>
                                 <li><a href="explore.html">explore </a> </li>
                                 <li><a href="#"> Help </a> </li>
-                                <li><a href="{% url 'profile' profile.id %}"> Profile </a> </li>
+                                <li><a href="{% url 'profile' profile_id=profile.id %}"> Profile </a> </li>
                                 {% if request.user.is_authenticated %}
                                 <li><a href="{% url 'logout' %}"> Log Out</a></li>
                                 {% else %}
@@ -357,7 +363,7 @@
                                         </div>
                                     </div>
                                     
-                                    <a href="{% url 'follow' profile.id %}" class="border border-gray-200 font-semibold px-4 py-1 rounded-full hover:bg-pink-600 hover:text-white hover:border-pink-600 "> Follow </a>
+                                    <a href="{% url 'follow' profile_id=profile.id %}" class="border border-gray-200 font-semibold px-4 py-1 rounded-full hover:bg-pink-600 hover:text-white hover:border-pink-600 "> Follow </a>
                                 </div>
                             </div>
                             {% endfor %}

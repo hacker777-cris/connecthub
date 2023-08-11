@@ -35,13 +35,12 @@ def homepage(request):
     }
     return render(request,'index.html',context)
 
-
 @login_required(login_url='signin')
 def profile_view(request, profile_id):
     profile = get_object_or_404(Profile, id=profile_id)
     
     # Get the follower count for the profile
-    follower_count = profile.followers.count()
+    follower_count = profile.following.count()  # Use the correct reverse relationship name
     
     context = {
         'profile': profile,
@@ -53,21 +52,23 @@ def profile_view(request, profile_id):
 def follower(request, profile_id):
     profile = get_object_or_404(Profile, id=profile_id)
 
-    follower, _ = Follower.objects.get_or_create(user=request.user)
+    # Get or create the Follower instance for the current user
+    follower, _ = Follower.objects.get_or_create(follower=request.user.profile)
 
-    if profile in follower.following.all():
+    # Create a new relationship between the Follower and the Profile being followed
+    if profile not in follower.following.all():
+        follower.following.add(profile)
+        messages.success(request, f'You are now following {profile.user.username}')
+    else:
         follower.following.remove(profile)
         messages.success(request, f'You unfollowed {profile.user.username}')
-    else:
-        if request.user == profile.user:
-            messages.info(request, 'You cannot follow yourself')
-        else:
-            follower.following.add(profile)
-            messages.success(request, f'You are now following {profile.user.username}')
 
     follower.save()
 
-    return redirect('profile')
+    return redirect('profile', profile_id=profile_id)
+
+
+
 
 class settings_view(View):
     template_name = "setting.html"
@@ -82,7 +83,8 @@ class settings_view(View):
     
 def sign_in(request):
     page = 'signin'
-   
+    # if request.user.is_authenticated:
+    #     return redirect('home')
     
     if request.method == 'POST':
         email=request.POST['email']
@@ -108,6 +110,7 @@ def sign_in(request):
     return render(request,'signin.html',context)
 
 
+
 def sign_up(request):
     page = 'signup'
 
@@ -125,11 +128,20 @@ def sign_up(request):
             messages.error(request, 'Passwords do not match')
         else:
             user = User.objects.create_user(username=username, password=password1, email=email, first_name=firstname, last_name=lastname)
+            
+            # Create the Profile instance
             profile = Profile.objects.create(user=user)
+            
+            # Create the corresponding Follower instance
+            follower = Follower.objects.create(user=user, follower=profile)
+
+            messages.success(request, 'Account created successfully. You can now sign in.')
             return redirect('signin')
 
     context = {}
     return render(request, 'signup.html', context)
+
+
 
 def logoutuser(request):
     logout(request)
