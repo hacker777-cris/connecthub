@@ -42,22 +42,20 @@ class Profile(models.Model):
         return f'{self.user.username} Profile'
 
     def save(self, *args, **kwargs):
-        # Save the profile
-        super().save(*args, **kwargs)
-        
-        # Save the profile
-        super().save(*args, **kwargs)
-        # resize the image
+        # resize the image before saving
         img = Image.open(self.avatar.path)
         if img.height > 300 or img.width > 300:
             output_size = (300, 300)
             img.thumbnail(output_size)
             img.save(self.avatar.path)
+        
+        # Call the super method to save the profile
+        super().save(*args, **kwargs)
 
 class Post(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     caption = models.CharField(max_length=200)
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, default=1)  # Replace '1' with the appropriate profile ID.
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='posts') # Replace '1' with the appropriate profile ID.
     post_image = models.ImageField(upload_to='profile_posts')
     text = models.TextField()
     created_date = models.DateTimeField(default=timezone.now)

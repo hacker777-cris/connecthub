@@ -19,8 +19,9 @@ from django.db.models import F
 
 @login_required(login_url='signin')
 def homepage(request):
-    user_posts = Post.objects.all()
-    profiles = Profile.objects.all()
+    logged_in_user_profile = Profile.objects.get(user=request.user)
+    user_posts = Post.objects.all().order_by('-created_date')
+    profiles = Profile.objects.exclude(user=request.user)
     profile = get_object_or_404(Profile, user=request.user)
     for profile in profiles:
         profile.follower_count = Follower.objects.filter(following=profile).count()
@@ -29,6 +30,7 @@ def homepage(request):
     context = {
 
         'profile': profile,
+        'logged_in_user_profile':logged_in_user_profile,
         'user_posts' :  user_posts,
         'profiles':profiles,
         
@@ -37,16 +39,22 @@ def homepage(request):
 
 @login_required(login_url='signin')
 def profile_view(request, profile_id):
+    
     profile = get_object_or_404(Profile, id=profile_id)
+    posts = profile.posts.all()
     
     # Get the follower count for the profile
     follower_count = profile.following.count()  # Use the correct reverse relationship name
     
     context = {
+
         'profile': profile,
+        'posts':posts,
         'follower_count': follower_count,
     }
-    return render(request, 'profile.html', context)
+    
+
+    return render(request, 'profile.html', context,)
 
 @login_required(login_url='signin')
 def follower(request, profile_id):
@@ -56,12 +64,16 @@ def follower(request, profile_id):
     follower, _ = Follower.objects.get_or_create(follower=request.user.profile)
 
     # Create a new relationship between the Follower and the Profile being followed
-    if profile not in follower.following.all():
-        follower.following.add(profile)
-        messages.success(request, f'You are now following {profile.user.username}')
+    if profile != follower:  # Check if the profile is not the same as the follower
+        if profile not in follower.following.all():
+            follower.following.add(profile)
+            messages.success(request, f'You are now following {profile.user.username}')
+        else:
+            follower.following.remove(profile)
+            messages.success(request, f'You unfollowed {profile.user.username}')
     else:
-        follower.following.remove(profile)
-        messages.success(request, f'You unfollowed {profile.user.username}')
+        messages.error(request, 'You cannot follow/unfollow yourself.')
+
 
     follower.save()
 
@@ -80,34 +92,25 @@ class settings_view(View):
         }
         return render(request, self.template_name, context)
     
-    
 def sign_in(request):
     page = 'signin'
-    # if request.user.is_authenticated:
-    #     return redirect('home')
     
     if request.method == 'POST':
-        email=request.POST['email']
-        username=request.POST['username']
-        password=request.POST['password']
+        email = request.POST['email']
+        username = request.POST['username']
+        password = request.POST['password']
 
-        try:
-            user = User.objects.get(username=username)
-        except:
-            messages.error(request,"Invalid credentials")
-        
+        # Try to authenticate the user
         user = authenticate(request, username=username, password=password)
-
 
         if user is not None:
             login(request, user)
-            return redirect('home')
+            return redirect('profile', profile_id=user.profile.id)  # Redirect to user's profile page
         else:
-            messages.error(request,"Username and Password do no match!")
-    context = {
+            messages.error(request, "Invalid username or password.")
 
-    }
-    return render(request,'signin.html',context)
+    context = {}
+    return render(request, 'signin.html', context)
 
 
 
@@ -169,3 +172,4 @@ def like(request, post_id):
 
 
     
+

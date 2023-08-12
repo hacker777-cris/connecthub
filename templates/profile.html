@@ -8,7 +8,7 @@
 <body>
     <div class="profile">
         <img class="profile-picture" src="{{user.profile.avatar.url}}" alt="Profile Picture">
-        <h2>{{ profile.username }}</h2>
+        <h2>{{ profile.user.username }}</h2>
         <div class="user-info">
             <p><strong>Posts</strong>: {{ total_posts }}</p>
             <p><strong>Followers</strong>: {{ follower_count }}</p>
@@ -22,8 +22,9 @@
         </div>
         <h3>Posts</h3>
         <div class="user-posts">
-            {% for post in user_posts %}
-                <img src="{% static 'path_to_post_image.jpg' %}" alt="Post {{ forloop.counter }}">
+            {% for post in posts %}
+                <img src="{{ post.post_image.url }}" alt="Post {{ forloop.counter }}">
+                <ul>{{post.caption}}</ul>
             {% endfor %}
         </div>
     </div>

@@ -172,9 +172,9 @@
 
                         <!-- profile -->
 
-                        <a href="{% url 'profile' profile_id=profile.id %}">
+                        <a href="">
                             {% if request.user.is_authenticated %}
-                            <img src="{{ profile.avatar.url }}" class="header-avatar" alt="profile image">
+                            <img src="{{ request.user.profile.avatar.url }}" class="header-avatar" alt="profile image">
                             {% else %}
                             <img src="{% static 'assets/images/avatars/avatar-1.jpg' %}" alt="" class="w-6 h-6 rounded-full border-2 border-white ">
                             {% endif %}
@@ -184,7 +184,7 @@
                                 <li><a href="{% url 'settings' %}"> Account setting </a> </li>
                                 <li><a href="explore.html">explore </a> </li>
                                 <li><a href="#"> Help </a> </li>
-                                <li><a href="{% url 'profile' profile_id=profile.id %}"> Profile </a> </li>
+                                <li><a href="{% url 'profile' profile.id %}"> Profile </a> </li>
                                 {% if request.user.is_authenticated %}
                                 <li><a href="{% url 'logout' %}"> Log Out</a></li>
                                 {% else %}
