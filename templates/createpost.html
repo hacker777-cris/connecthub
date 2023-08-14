@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create a Post</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+  <div class="container mx-auto mt-10 p-4">
+    <div class="max-w-md mx-auto bg-white p-6 rounded-md shadow-md">
+      <h2 class="text-2xl font-semibold mb-4">Create a Post</h2>
+      <form method="POST" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-4">
+          <label for="caption" class="block text-sm font-medium text-gray-700">Caption</label>
+          <input type="text" id="caption" name="caption" class="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-blue-300">
+        </div>
+        <div class="mb-4">
+          <label for="post_image" class="block text-sm font-medium text-gray-700">Post Image</label>
+          <input type="file" id="post_image" name="post_image" accept="image/*" onchange="previewImage(this)" class="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-blue-300">
+          <img id="imagePreview" class="mt-2 max-h-48 hidden">
+        </div>
+        <div class="flex justify-between">
+          <button type="button" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring focus:ring-red-300" onclick="window.location.href='{% url 'home' %}'">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300">Create</button>
+        </div>
+      </form>
+      
+    </div>
+  </div>
+
+  <script>
+    function previewImage(input) {
+      const preview = document.getElementById('imagePreview');
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          preview.src = e.target.result;
+          preview.classList.remove('hidden');
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+  </script>
+</body>
+</html>

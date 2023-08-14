@@ -35,6 +35,9 @@
                         <!-- ... notification icon ... -->
                     </svg>
                 </a>
+                <a href="{% url 'createpost' %}" class="border border-blue-600 font-semibold px-4 py-1 rounded-full inline-flex items-center justify-center post-button text-black hover:border-blue-600 hover:text-blue-600 hover:underline">
+                    Create a Post
+                  </a>
                 <a href="#" class="text-gray-700">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                         class="h-6 w-6">
@@ -138,10 +141,12 @@
                                 </div>
                               </div>
                             </div>
-                            <div uk-lightbox>
-                                <a href="#">  
-                                    <img src="{{post.post_image.url}}" alt="">
-                                </a>
+                            <div class="post-image-container">
+                                <div uk-lightbox>
+                                    <a href="#">
+                                        <img src="{{ post.post_image.url }}" alt="">
+                                    </a>
+                                </div>
                             </div>
                             <div class="px-4 pb-2 text-gray-700">{{ post.caption }}</div> 
                             <div class="py-3 px-4 space-y-3"> 
@@ -258,7 +263,20 @@
     <script src="{% static 'assets/js/simplebar.js' %}"></script>
     <script src="{% static 'assets/js/custom.js' %}"></script>
 </body>
-
+<!-- post image resize -->
+<style>
+    .post-image-container {
+      width: 100%;
+      max-height: 400px; /* Adjust this value as needed */
+      overflow: hidden;
+    }
+  
+    .post-image-container img {
+      width: 100%;
+      height: auto;
+    }
+  </style>
+  
 <!-- profileDropdown -->
 <script>
     const profileButton = document.getElementById('profileButton');

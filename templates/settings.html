@@ -37,6 +37,11 @@
             </div>
             <div class="bg-white rounded-md lg:shadow-lg shadow col-span-2">
                 <div class="grid grid-cols-2 gap-3 lg:p-6 p-4">
+                    <div class="col-span-2">
+                        <label for="avatar">Update Profile Picture</label>
+                        <input type="file" name="avatar" accept="image/*" id="avatar">
+                        <img src="{{ user.profile.avatar.url }}" alt="Current Avatar" class="mt-2 rounded-full h-20 w-20">
+                    </div>
                     <div>
                         <label for="{{ form.first_name.id_for_label }}"> First name</label>
                         <input type="text" placeholder="Your name.." class="shadow-none bg-gray-100" 

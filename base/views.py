@@ -15,6 +15,7 @@ from base.forms import PostForm
 from django.views.generic import View
 from django.db.models import F
 from base.forms import ProfileUpdateForm
+from django.utils import timezone
 
 
 
@@ -81,6 +82,20 @@ def profile_update(request, profile_id):
     }
         
     return render(request, 'settings.html', context)
+@login_required(login_url='signin')
+def create_post(request):
+    if request.method == 'POST':
+        caption = request.POST.get('caption')
+        post_image = request.FILES.get('post_image')
+        
+        
+        # You can process the form data and create a Post instance
+        post = Post(caption=caption,profile = request.user.profile, post_image=post_image, created_date=timezone.now())
+        post.save()
+        
+        return redirect('home')
+    
+    return render(request, 'createpost.html')
 
 
 @login_required(login_url='signin')
@@ -104,7 +119,7 @@ def follow_unfollow(request, profile_id):
 
 
 
-class settings_view(View):
+
     template_name = "setting.html"
 
     def get(self, request, *args, **kwargs):
