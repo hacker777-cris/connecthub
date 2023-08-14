@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from base.views import homepage,profile_view,follower,settings_view,sign_in,sign_up,logoutuser,like
+from base.views import homepage,profile_view,follow_unfollow,settings_view,sign_in,sign_up,logoutuser,like,profile_update
 
 
 urlpatterns = [
@@ -11,8 +11,9 @@ urlpatterns = [
     path('signin', sign_in, name='signin'),
     path('signup', sign_up, name='signup'),
     path('logout',logoutuser,name='logout'),
-    path('follow/<int:profile_id>/',follower , name='follow'),
+    path('follow_unfollow/<int:profile_id>/',follow_unfollow , name='follow_unfollow'),
     path('like/<int:post_id>/',like,name='like_post'),
+    path('profileupdate/<int:profile_id>/',profile_update,name='profileupdate'),
     
 ]
 

@@ -13,18 +13,20 @@ User = get_user_model()
 class Profile(models.Model):
     relationship_choices = (
         ('single', 'single'),
+        ("in a Relationship", "In A Relationship"),
+        ('engaged','engaged'),
         ('married', 'married'),
     )
     
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    username = models.CharField(blank=False, max_length=100, default='user')
+    username = models.CharField(blank=False, max_length=100)
     phone_number = models.CharField(max_length=20)
-    email = models.EmailField(default='info@example.com')
+    email = models.EmailField()
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
-    bio = models.TextField(default='about me')
-    location = models.CharField(max_length=100, default='nairobi')
-    work = models.CharField(max_length=200, default='unemployed')
+    bio = models.TextField()
+    location = models.CharField(max_length=100)
+    work = models.CharField(max_length=200)
     relationship_status = models.CharField(
         choices=relationship_choices,
         default='none',
@@ -53,11 +55,9 @@ class Profile(models.Model):
         super().save(*args, **kwargs)
 
 class Post(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     caption = models.CharField(max_length=200)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='posts') # Replace '1' with the appropriate profile ID.
     post_image = models.ImageField(upload_to='profile_posts')
-    text = models.TextField()
     created_date = models.DateTimeField(default=timezone.now)
     like_count = models.IntegerField(default=0)
 
@@ -70,21 +70,18 @@ class Post(models.Model):
     
 
 class Follower(models.Model):
-    follower = models.OneToOneField(Profile, on_delete=models.CASCADE, related_name='follower')
-    following = models.ManyToManyField(Profile, related_name='following')
-    user = models.ForeignKey(User, on_delete=models.CASCADE,default=1)
+    follower = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='follower')
+    following = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='following')
 
     def __str__(self):
-        return self.user.username
+        return f"{self.follower.user.username} is following {self.following.user.username}"
 
         
 
-
 class Like(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, default=1)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     liked_object = models.ForeignKey('Post', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'liked_object')
+        unique_together = ('profile', 'liked_object')

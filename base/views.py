@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from django.http import HttpResponseForbidden,JsonResponse
+from django.http import HttpResponseForbidden,JsonResponse,HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
@@ -14,6 +14,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from base.forms import PostForm
 from django.views.generic import View
 from django.db.models import F
+from base.forms import ProfileUpdateForm
 
 
 
@@ -22,6 +23,7 @@ def homepage(request):
     logged_in_user_profile = Profile.objects.get(user=request.user)
     user_posts = Post.objects.all().order_by('-created_date')
     profiles = Profile.objects.exclude(user=request.user)
+    logged_in_user_id = request.user.id
     profile = get_object_or_404(Profile, user=request.user)
     for profile in profiles:
         profile.follower_count = Follower.objects.filter(following=profile).count()
@@ -30,6 +32,7 @@ def homepage(request):
     context = {
 
         'profile': profile,
+        'logged_in_user_id': logged_in_user_id,
         'logged_in_user_profile':logged_in_user_profile,
         'user_posts' :  user_posts,
         'profiles':profiles,
@@ -57,27 +60,46 @@ def profile_view(request, profile_id):
     return render(request, 'profile.html', context,)
 
 @login_required(login_url='signin')
-def follower(request, profile_id):
+def profile_update(request, profile_id):
+    profile = request.user.profile
+    form = None
+
+    if request.method == 'POST':
+        form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile updated successfully')
+            return redirect('home')
+        else:
+
+            print(form.errors)
+    else:
+        form = ProfileUpdateForm(instance=profile)
+    
+    context = {
+        'form': form
+    }
+        
+    return render(request, 'settings.html', context)
+
+
+@login_required(login_url='signin')
+def follow_unfollow(request, profile_id):
     profile = get_object_or_404(Profile, id=profile_id)
+    if profile.user == request.user:
+        return HttpResponseBadRequest("You cannot follow/unfollow yourself.")
 
     # Get or create the Follower instance for the current user
-    follower, _ = Follower.objects.get_or_create(follower=request.user.profile)
+    try:
+        follower_obj = Follower.objects.get(follower=request.user.profile, following=profile)
+        # If the relationship exists, delete it (unfollow)
+        follower_obj.delete()
+    except Follower.DoesNotExist:
+        # If the relationship doesn't exist, create it (follow)
+        follower_obj = Follower(follower=request.user.profile, following=profile)
+        follower_obj.save()
 
-    # Create a new relationship between the Follower and the Profile being followed
-    if profile != follower:  # Check if the profile is not the same as the follower
-        if profile not in follower.following.all():
-            follower.following.add(profile)
-            messages.success(request, f'You are now following {profile.user.username}')
-        else:
-            follower.following.remove(profile)
-            messages.success(request, f'You unfollowed {profile.user.username}')
-    else:
-        messages.error(request, 'You cannot follow/unfollow yourself.')
-
-
-    follower.save()
-
-    return redirect('profile', profile_id=profile_id)
+    return redirect('profile', profile_id=profile.id)
 
 
 
@@ -105,7 +127,7 @@ def sign_in(request):
 
         if user is not None:
             login(request, user)
-            return redirect('profile', profile_id=user.profile.id)  # Redirect to user's profile page
+            return redirect('home')  # Redirect to user's profile page
         else:
             messages.error(request, "Invalid username or password.")
 
@@ -136,13 +158,15 @@ def sign_up(request):
             profile = Profile.objects.create(user=user)
             
             # Create the corresponding Follower instance
-            follower = Follower.objects.create(user=user, follower=profile)
+            follower = Follower.objects.create(follower=profile, following=profile)
 
             messages.success(request, 'Account created successfully. You can now sign in.')
-            return redirect('signin')
+            login(request, user)
+            return redirect('profileupdate', profile_id=user.profile.id)
 
     context = {}
     return render(request, 'signup.html', context)
+
 
 
 
@@ -150,20 +174,33 @@ def logoutuser(request):
     logout(request)
     return redirect('home')
 
+
 def like(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
-    if Like.objects.filter(user=request.user, liked_object=post).exists():
-        like_to_delete = Like.objects.get(user=request.user, liked_object=post)
-        like_to_delete.delete()
+    # Get the profile of the current user
+    profile = request.user.profile
+
+    # Check if the user's profile has already liked the post
+    existing_like = Like.objects.filter(profile=profile, liked_object=post).first()
+    if existing_like:
+        # User's profile has already liked, so unlike
+        existing_like.delete()
         post.like_count -= 1
-        post.save()
+        post.save()  # Save the updated post instance
+        messages.success(request, 'You unliked the post.')
     else:
-        Like.objects.create(user=request.user, liked_object=post)
+        # User's profile has not liked, create a new Like
+        like = Like.objects.create(profile=profile, liked_object=post)
         post.like_count += 1
-        post.save()
+        post.save()  # Save the updated post instance
+        messages.success(request, 'You liked the post.')
 
     return redirect('home')
+
+
+
+
 
 
 

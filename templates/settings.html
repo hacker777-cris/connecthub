@@ -1,0 +1,131 @@
+{% load static %}
+
+<!DOCTYPE html>
+< lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{% static 'assets/images/favicon.png' %}" rel="icon" type="image/png">
+    <title>Settings</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'assets/css/icons.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/uikit.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/tailwind.css' %}">
+
+</head>
+<>
+
+<div class="container m-auto"> 
+    <h1 class="text-2xl leading-none text-gray-900 tracking-tight mt-3"> Account Setting </h1>
+    <ul class="mt-5 -mr-3 flex-nowrap lg:overflow-hidden overflow-x-scroll uk-tab">
+        <li class="uk-active"><a href="#">General</a></li>
+        <li><a href="#">Profile</a></li>
+        <li><a href="#">Privacy</a></li>
+        <li><a href="#">Notification</a></li>
+        <li><a href="#">Social links</a></li>
+        <li><a href="#">Billing</a></li>
+        <li><a href="#">Security</a></li>
+    </ul>
+    <form method="POST" enctype="multipart/form-data" action="">
+        {% csrf_token %}
+        <div class="grid lg:grid-cols-3 mt-12 gap-8">
+            <div>
+                <h3 class="text-xl mb-2"> Basic</h3>
+                <p></p>
+            </div>
+            <div class="bg-white rounded-md lg:shadow-lg shadow col-span-2">
+                <div class="grid grid-cols-2 gap-3 lg:p-6 p-4">
+                    <div>
+                        <label for="{{ form.first_name.id_for_label }}"> First name</label>
+                        <input type="text" placeholder="Your name.." class="shadow-none bg-gray-100" 
+                               name="{{ form.first_name.name }}" value="{{ form.first_name.value }}">
+                        <div class="errors">{{ form.first_name.errors }}</div>
+                    </div>
+                    <div>
+                        <label for="{{ form.last_name.id_for_label }}"> Last name</label>
+                        <input type="text" placeholder="Your name.." class="shadow-none bg-gray-100" 
+                               name="{{ form.last_name.name }}" value="{{ form.last_name.value }}">
+                        <div class="errors">{{ form.last_name.errors }}</div>
+                    </div>
+                    
+
+                    <div>
+                        <label for="{{ form.username.id_for_label }}"> Username</label>
+                        <input type="text" placeholder="Your username.." class="shadow-none bg-gray-100" 
+                            name="{{ form.username.name }}" value="{{ form.username.value }}">
+                        <div class="errors">{{ form.username.errors }}</div>
+                    </div>
+
+                    <div>
+                        <label for="{{ form.phone_number.id_for_label }}"> Phone number</label>
+                        <input type="text" placeholder="Your phone number.." class="shadow-none bg-gray-100" 
+                            name="{{ form.phone_number.name }}" value="{{ form.phone_number.value }}">
+                        <div class="errors">{{ form.phone_number.errors }}</div>
+                    </div>
+
+                    <div>
+                        <label for="{{ form.bio.id_for_label }}"> Bio</label>
+                        <textarea id="{{ form.bio.id_for_label }}" name="{{ form.bio.name }}" 
+                                rows="3" class="shadow-none bg-gray-100">{{ form.bio.value }}</textarea>
+                        <div class="errors">{{ form.bio.errors }}</div>
+                    </div>
+
+                    
+                    <div class="col-span-2">
+                        <label for="{{ form.email.id_for_label }}"> Email</label>
+                        <input type="text" placeholder="Your email.." class="shadow-none bg-gray-100" 
+                               name="{{ form.email.name }}" value="{{ form.email.value }}">
+                        <div class="errors">{{ form.email.errors }}</div>
+                    </div>
+                
+                    <div class="col-span-2">
+                        <label for="{{ form.location.id_for_label }}"> Location</label>
+                        <input type="text" placeholder="Your location.." class="shadow-none bg-gray-100" 
+                               name="{{ form.location.name }}" value="{{ form.location.value }}">
+                        <div class="errors">{{ form.location.errors }}</div>
+                    </div>
+                    <div>
+                        <label for="{{ form.work.id_for_label }}"> Working at</label>
+                        <input type="text" placeholder="Your workplace.." class="shadow-none bg-gray-100" 
+                               name="{{ form.work.name }}" value="{{ form.work.value }}">
+                        <div class="errors">{{ form.work.errors }}</div>
+                    </div> 
+                    <div>
+                        <label for="{{ form.relationship_status.id_for_label }}"> Relationship Status</label>
+                        <select id="{{ form.relationship_status.id_for_label }}" 
+                                name="{{ form.relationship_status.name }}" 
+                                class="shadow-none bg-gray-100">
+                            <option value="">Select</option>
+                            {% for value, label in form.fields.relationship_status.choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="errors">{{ form.relationship_status.errors }}</div>
+                    </div>
+                    
+                </div> 
+
+                <div class="bg-gray-10 p-6 pt-0 flex justify-end space-x-3">
+                    <button class="p-2 px-4 rounded bg-gray-50 text-red-500"> Cancel </button>
+                    <button type="submit" class="button bg-blue-700"> Save </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+ <!-- Scripts
+    ================================================== -->
+    <script src="{% static 'assets/js/tippy.all.min.js' %}"></script>  
+    <script src="{% static 'assets/js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'assets/js/uikit.js' %}"></script>
+    <script src="{% static 'assets/js/simplebar.js' %}"></script>
+    <script src="{% static 'assets/js/custom.js' %}"></script>
+
+
+    <script src="{% static '../../unpkg.com/ionicons%405.2.3/dist/ionicons.js' %}"></script>
+</body>
+
+</html>
