@@ -44,7 +44,7 @@ def homepage(request):
 @login_required(login_url='signin')
 def profile_view(request, profile_id):
     
-    profile = get_object_or_404(Profile, id=profile_id)
+    profile = request.user.profile
     posts = profile.posts.all()
     
     # Get the follower count for the profile
