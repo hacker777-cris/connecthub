@@ -86,16 +86,25 @@ def profile_update(request, profile_id):
 def create_post(request):
     if request.method == 'POST':
         caption = request.POST.get('caption')
-        post_image = request.FILES.get('post_image')
-        
-        
-        # You can process the form data and create a Post instance
-        post = Post(caption=caption,profile = request.user.profile, post_image=post_image, created_date=timezone.now())
+        post_type = request.POST.get('post_type')
+        post_file = request.FILES.get('post_file')
+
+        post = Post(caption=caption, profile=request.user.profile, created_date=timezone.now())
+
+        if post_type == 'image':
+            post.post_image = post_file
+            post.is_video = False
+        elif post_type == 'video':
+            post.post_video = post_file
+            post.is_video = True
+
         post.save()
-        
+
         return redirect('home')
-    
+
     return render(request, 'createpost.html')
+
+
 
 
 @login_required(login_url='signin')
@@ -104,13 +113,11 @@ def follow_unfollow(request, profile_id):
     if profile.user == request.user:
         return HttpResponseBadRequest("You cannot follow/unfollow yourself.")
 
-    # Get or create the Follower instance for the current user
+    
     try:
         follower_obj = Follower.objects.get(follower=request.user.profile, following=profile)
-        # If the relationship exists, delete it (unfollow)
         follower_obj.delete()
     except Follower.DoesNotExist:
-        # If the relationship doesn't exist, create it (follow)
         follower_obj = Follower(follower=request.user.profile, following=profile)
         follower_obj.save()
 

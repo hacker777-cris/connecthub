@@ -90,64 +90,74 @@
             <!-- Left Sidebar -->
             <div class="space-y-5 flex-shrink-0 lg:w-7/12">
                 <!-- post 1-->
+                        <!-- post section -->
                         {% for post in user_posts %}
-                        <div class="bg-white shadow rounded-md  -mx-2 lg:mx-0">
-    
-                            <!-- post header-->
+                        <div class="bg-white shadow rounded-md -mx-2 lg:mx-0">
+
+                            <!-- post header -->
                             <div class="flex justify-between items-center px-4 py-3">
                                 <div class="flex flex-1 items-center space-x-4">
                                     <a href="#">
-                                        <div class="bg-gradient-to-tr from-yellow-600 to-pink-600 p-0.5 rounded-full">  
+                                        <div class="bg-gradient-to-tr from-yellow-600 to-pink-600 p-0.5 rounded-full">
                                             <img src="{{post.profile.avatar.url}}" class="bg-gray-200 border border-white rounded-full w-8 h-8">
                                         </div>
                                     </a>
-                                    <span class="block capitalize font-semibold "> {{post.profile.username}} </span>
+                                    <span class="block capitalize font-semibold">{{post.profile.username}}</span>
                                 </div>
-                              <div>
-                                <a href="#"> <i class="icon-feather-more-horizontal text-2xl hover:bg-gray-200 rounded-full p-2 transition -mr-1 "></i> </a>
-                                <div class="bg-white w-56 shadow-md mx-auto p-2 mt-12 rounded-md text-gray-500 hidden text-base border border-gray-100  " uk-drop="mode: hover;pos: top-right">
-                              
-                                    <ul class="space-y-1">
-                                      <li> 
-                                          <a href="#" class="flex items-center px-3 py-2 hover:bg-gray-200 hover:text-gray-800 rounded-md ">
-                                           <i class="uil-share-alt mr-1"></i> Share
-                                          </a> 
-                                      </li>
-                                      <li> 
-                                          <a href="#" class="flex items-center px-3 py-2 hover:bg-gray-200 hover:text-gray-800 rounded-md ">
-                                           <i class="uil-edit-alt mr-1"></i>  Edit Post 
-                                          </a> 
-                                      </li>
-                                      <li> 
-                                          <a href="#" class="flex items-center px-3 py-2 hover:bg-gray-200 hover:text-gray-800 rounded-md ">
-                                           <i class="uil-comment-slash mr-1"></i>   Disable comments
-                                          </a> 
-                                      </li> 
-                                      <li> 
-                                          <a href="#" class="flex items-center px-3 py-2 hover:bg-gray-200 hover:text-gray-800 rounded-md ">
-                                           <i class="uil-favorite mr-1"></i>  Add favorites 
-                                          </a> 
-                                      </li>
-                                      <li>
-                                        <hr class="-mx-2 my-2 ">
-                                      </li>
-                                      <li> 
-                                          <a href="#" class="flex items-center px-3 py-2 text-red-500 hover:bg-red-100 hover:text-red-500 rounded-md ">
-                                           <i class="uil-trash-alt mr-1"></i>  Delete
-                                          </a> 
-                                      </li>
-                                    </ul>
-                                
+                                <div>
+                                    <a href="#" class="dropdown-toggle">
+                                        <i class="icon-feather-more-horizontal text-2xl hover:bg-gray-200 rounded-full p-2 transition -mr-1 "></i>
+                                    </a>
+                                    <div class="bg-white w-56 shadow-md mx-auto p-2 mt-12 rounded-md text-gray-500 hidden text-base border border-gray-100 dropdown-menu"
+                                        uk-drop="mode: hover;pos: top-right">
+                                        <ul class="space-y-1">
+                                            <li>
+                                                <a href="#" class="flex items-center px-3 py-2 hover:bg-gray-200 hover:text-gray-800 rounded-md ">
+                                                    <i class="uil-share-alt mr-1"></i> Share
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="flex items-center px-3 py-2 hover:bg-gray-200 hover:text-gray-800 rounded-md ">
+                                                    <i class="uil-edit-alt mr-1"></i> Edit Post
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="flex items-center px-3 py-2 hover:bg-gray-200 hover:text-gray-800 rounded-md ">
+                                                    <i class="uil-comment-slash mr-1"></i> Disable comments
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="flex items-center px-3 py-2 hover:bg-gray-200 hover:text-gray-800 rounded-md ">
+                                                    <i class="uil-favorite mr-1"></i> Add favorites
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <hr class="-mx-2 my-2">
+                                            </li>
+                                            <li>
+                                                <a href="#" class="flex items-center px-3 py-2 text-red-500 hover:bg-red-100 hover:text-red-500 rounded-md ">
+                                                    <i class="uil-trash-alt mr-1"></i> Delete
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
-                              </div>
                             </div>
                             <div class="post-image-container">
-                                <div uk-lightbox>
-                                    <a href="#">
-                                        <img src="{{ post.post_image.url }}" alt="">
-                                    </a>
-                                </div>
+                                {% if post.is_video %}
+                                    <video controls class="h-48 w-full md:max-h-48">
+                                        <source src="{{ post.post_video.url }}" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                {% else %}
+                                    <div uk-lightbox>
+                                        <a href="#">
+                                            <img src="{{ post.post_image.url }}" alt="" class="h-48 w-auto md:max-h-48">
+                                        </a>
+                                    </div>
+                                {% endif %}
                             </div>
+                            
                             <div class="px-4 pb-2 text-gray-700">{{ post.caption }}</div> 
                             <div class="py-3 px-4 space-y-3"> 
                                
@@ -262,7 +272,33 @@
     <script src="{% static 'assets/js/uikit.js' %}"></script>
     <script src="{% static 'assets/js/simplebar.js' %}"></script>
     <script src="{% static 'assets/js/custom.js' %}"></script>
-</body>
+<!-- dropdwn to share -->
+    <script>
+        // Get all the dropdown-toggle elements
+        const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+    
+        // Attach event listeners to each dropdown-toggle
+        dropdownToggles.forEach((toggle) => {
+            toggle.addEventListener('mouseenter', showDropdown);
+            toggle.addEventListener('mouseleave', hideDropdown);
+        });
+    
+        // Show the dropdown menu on hover
+        function showDropdown(event) {
+            const dropdownMenu = event.target.nextElementSibling;
+            dropdownMenu.classList.add('show');
+        }
+    
+        // Hide the dropdown menu when hover ends
+        function hideDropdown(event) {
+            const dropdownMenu = event.target.nextElementSibling;
+            dropdownMenu.classList.remove('show');
+        }
+    </script>
+    
+
+      
+
 <!-- post image resize -->
 <style>
     .post-image-container {
@@ -340,5 +376,5 @@
 
 
 
-
+</body>
 </html>

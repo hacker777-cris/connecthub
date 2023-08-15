@@ -59,6 +59,8 @@ class Post(models.Model):
     caption = models.CharField(max_length=200)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='posts') # Replace '1' with the appropriate profile ID.
     post_image = models.ImageField(upload_to='profile_posts')
+    post_video = models.FileField(upload_to='profile_videos', blank=True, null=True)
+    is_video = models.BooleanField(default=False)  # Indicates whether the post is a video
     created_date = models.DateTimeField(default=timezone.now)
     like_count = models.IntegerField(default=0)
 
