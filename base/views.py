@@ -45,20 +45,19 @@ def homepage(request):
 def profile_view(request, profile_id):
     
     profile = request.user.profile
-    posts = profile.posts.all()
+    posts = Post.objects.filter(profile=profile).order_by('-created_date')
     
     # Get the follower count for the profile
     follower_count = profile.following.count()  # Use the correct reverse relationship name
     
     context = {
-
         'profile': profile,
-        'posts':posts,
+        'posts': posts,
         'follower_count': follower_count,
     }
     
+    return render(request, 'profile.html', context)
 
-    return render(request, 'profile.html', context,)
 
 @login_required(login_url='signin')
 def profile_update(request, profile_id):
@@ -110,6 +109,7 @@ def create_post(request):
 @login_required(login_url='signin')
 def follow_unfollow(request, profile_id):
     profile = get_object_or_404(Profile, id=profile_id)
+    current_url = request.build_absolute_uri()
     if profile.user == request.user:
         return HttpResponseBadRequest("You cannot follow/unfollow yourself.")
 
@@ -197,28 +197,31 @@ def logoutuser(request):
     return redirect('home')
 
 
+from django.http import JsonResponse
+
 def like(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
+    if request.method == 'POST':
+        post = get_object_or_404(Post, id=post_id)
+        profile = request.user.profile
 
-    # Get the profile of the current user
-    profile = request.user.profile
+        existing_like = Like.objects.filter(profile=profile, liked_object=post).first()
+        if existing_like:
+            existing_like.delete()
+            post.like_count -= 1
+            liked = False
+        else:
+            like = Like.objects.create(profile=profile, liked_object=post)
+            post.like_count += 1
+            liked = True
 
-    # Check if the user's profile has already liked the post
-    existing_like = Like.objects.filter(profile=profile, liked_object=post).first()
-    if existing_like:
-        # User's profile has already liked, so unlike
-        existing_like.delete()
-        post.like_count -= 1
-        post.save()  # Save the updated post instance
-        messages.success(request, 'You unliked the post.')
-    else:
-        # User's profile has not liked, create a new Like
-        like = Like.objects.create(profile=profile, liked_object=post)
-        post.like_count += 1
-        post.save()  # Save the updated post instance
-        messages.success(request, 'You liked the post.')
+        post.save()
 
-    return redirect('home')
+        response_data = {'status': 'success', 'liked': liked, 'like_count': post.like_count}
+        return JsonResponse(response_data)
+
+    return JsonResponse({'status': 'error'})
+
+
 
 
 

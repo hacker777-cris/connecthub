@@ -1,31 +1,72 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'assets/css/profile.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
 </head>
-<body>
-    <div class="profile">
-        <img class="profile-picture" src="{{user.profile.avatar.url}}" alt="Profile Picture">
-        <h2>{{ profile.user.username }}</h2>
-        <div class="user-info">
-            <p><strong>Posts</strong>: {{ total_posts }}</p>
-            <p><strong>Followers</strong>: {{ follower_count }}</p>
-            <p><strong>Following</strong>: {{ following_count }}</p>
-        </div>
-        <p class="bio">{{ profile.bio }}</p>
-        <div class="user-stats">
-            <p><strong>Joined</strong>: {{ user.date_joined }}</p>
-            <p><strong>Location</strong>: {{ user.profile.location }}</p>
-            <p><strong>Website</strong>: <a href="{{ user.userprofile.website }}">{{ user.userprofile.website }}</a></p>
-        </div>
-        <h3>Posts</h3>
-        <div class="user-posts">
-            {% for post in posts %}
-                <img src="{{ post.post_image.url }}" alt="Post {{ forloop.counter }}">
-                <ul>{{post.caption}}</ul>
-            {% endfor %}
+<body class="bg-gray-100">
+    <div class="flex justify-center items-center min-h-screen bg-gray-100">
+        <div class="bg-white w-full max-w-xl p-8 rounded-lg shadow-md">
+            <div class="flex items-center space-x-4">
+                <img class="w-16 h-16 rounded-full border-2 border-white" src="{{ user.profile.avatar.url }}" alt="Profile Picture">
+                <div>
+                    <h2 class="text-xl font-semibold">{{ profile.user.username }}</h2>
+                    <a href="{% url 'profileupdate' profile.id %}" class="text-sm text-blue-500 hover:underline">Edit Profile</a>
+                </div>
+            </div>
+            <div class="mt-4">
+                <p class="text-gray-700">{{ profile.bio }}</p>
+            </div>
+            <div class="flex space-x-4 mt-4 text-gray-700">
+                <p><strong>Posts</strong>: {{ total_posts }}</p>
+                <p><strong>Followers</strong>: {{ follower_count }}</p>
+                <p><strong>Following</strong>: {{ following_count }}</p>
+            </div>
+            <div class="mt-6 border-t pt-6">
+                <h3 class="text-lg font-semibold mb-4">Posts</h3>
+                <!-- Post loop -->
+                {% for post in posts %}
+                <div class="bg-white p-4 mb-4 rounded-lg shadow-md">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <img src="{{ post.profile.avatar.url }}" alt="Profile Picture" class="w-8 h-8 rounded-full border-2 border-white">
+                            <span class="font-semibold">{{ post.profile.username }}</span>
+                        </div>
+                        <button class="text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                    </div>
+                    <div class="mb-4">
+                        {% if post.is_video %}
+                            <video controls class="w-full rounded-lg">
+                                <source src="{{ post.post_video.url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        {% else %}
+                            <img src="{{ post.post_image.url }}" alt="Post Image" class="w-full rounded-lg">
+                        {% endif %}
+                    </div>
+                    <div class="text-gray-700">
+                        {{ post.caption }}
+                    </div>
+                    <div class="flex items-center mt-4">
+                        <button class="text-gray-500 hover:text-blue-500">
+                            <i class="far fa-thumbs-up"></i> Like
+                        </button>
+                        <span class="ml-2 text-gray-500">{{ post.like_count }} Likes</span>
+                        <button class="ml-4 text-gray-500 hover:text-blue-500">
+                            <i class="far fa-comment"></i> Comment
+                        </button>
+                        <button class="ml-4 text-gray-500 hover:text-blue-500">
+                            <i class="fas fa-share"></i> Share
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </body>
