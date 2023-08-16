@@ -19,40 +19,33 @@
 {% endif %}
 
 <body class="bg-gray-100">
-    <header class="bg-white shadow">
-        <div class="container mx-auto py-4 px-4 flex justify-between items-center">
-            <div class="flex items-center space-x-4">
-                <a href="{% url 'home' %}" class="text-2xl font-semibold text-blue-600">Connect Hub</a>
-                <div class="bg-gray-100 p-2 rounded-full">
-                    <input type="text" placeholder="Search for username.."
-                        class="w-40 outline-none bg-transparent text-sm">
-                </div>
+    <header class="bg-white shadow fixed top-0 w-full z-50">
+    <div class="container mx-auto py-4 px-4 flex justify-between items-center">
+        <div class="flex items-center space-x-4">
+            <a href="{% url 'home' %}" class="text-2xl font-semibold text-blue-600">Connect Hub</a>
+            <div class="bg-gray-100 p-2 rounded-full">
+                <input type="text" placeholder="Search for username.." class="w-40 outline-none bg-transparent text-sm">
             </div>
-            <div class="flex items-center space-x-4">
-                <a href="#" class="text-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                        class="h-6 w-6">
-                        <!-- ... notification icon ... -->
-                    </svg>
-                </a>
-                <a href="{% url 'createpost' %}" class="border border-blue-600 font-semibold px-4 py-1 rounded-full inline-flex items-center justify-center post-button text-black hover:border-blue-600 hover:text-blue-600 hover:underline">
-                    Create a Post
-                  </a>
-                <a href="#" class="text-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                        class="h-6 w-6">
-                        <!-- ... messages icon ... -->
-                    </svg>
-                </a>
-                <div class="relative inline-block group">
-                    <button id="profileButton" class="flex items-center focus:outline-none">
-                        {% if request.user.is_authenticated %}
-                        <ul>{{ request.user.profile.username }} </ul>
-                        <img src=" {{ request.user.profile.avatar.url }}" alt="Profile Image" class="h-8 w-8 rounded-full border-2 border-white">
-                        {% else %}
-                        <img src="{% static 'assets/images/avatars/avatar-1.jpg' %}" alt="Profile Image" class="h-8 w-8 rounded-full border-2 border-white">
-                        {% endif %}
-                    </button>
+        </div>
+        <div class="flex items-center space-x-4">
+            <a href="#" class="text-gray-700">
+                <!-- ... notification icon ... -->
+            </a>
+            <a href="{% url 'createpost' %}" class="border border-blue-600 font-semibold px-4 py-1 rounded-full inline-flex items-center justify-center post-button text-black hover:border-blue-600 hover:text-blue-600 hover:underline">
+                Create a Post
+            </a>
+            <a href="#" class="text-gray-700">
+                <!-- ... messages icon ... -->
+            </a>
+            <div class="relative inline-block group">
+                <button id="profileButton" class="flex items-center focus:outline-none">
+                    {% if request.user.is_authenticated %}
+                    <ul>{{ request.user.profile.username }} </ul>
+                    <img src="{{ request.user.profile.avatar.url }}" alt="Profile Image" class="h-8 w-8 rounded-full border-2 border-white">
+                    {% else %}
+                    <img src="{% static 'assets/images/avatars/avatar-1.jpg' %}" alt="Profile Image" class="h-8 w-8 rounded-full border-2 border-white">
+                    {% endif %}
+                </button>
                     <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-56 bg-white shadow-md border border-gray-200 rounded-md">
                         <ul class="space-y-2 py-2">
                             <li>
