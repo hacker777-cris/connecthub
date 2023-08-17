@@ -14,6 +14,7 @@
                 <img class="w-16 h-16 rounded-full border-2 border-white" src="{{ user.profile.avatar.url }}" alt="Profile Picture">
                 <div>
                     <h2 class="text-xl font-semibold">{{ profile.user.username }}</h2>
+                    
                     <a href="{% url 'profileupdate' profile.id %}" class="text-sm text-blue-500 hover:underline">Edit Profile</a>
                 </div>
             </div>

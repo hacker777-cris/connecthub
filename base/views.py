@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from django.http import HttpResponseForbidden,JsonResponse,HttpResponseBadRequest
+from django.http import HttpResponseForbidden,JsonResponse,HttpResponseBadRequest,Http404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
@@ -103,13 +103,21 @@ def create_post(request):
 
     return render(request, 'createpost.html')
 
+@login_required(login_url='signin')
+def delete_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+
+    if post.author != request.user:
+        raise Http404("You can't access this page")
+
+    post.delete()
+    return redirect('profile')
 
 
 
 @login_required(login_url='signin')
 def follow_unfollow(request, profile_id):
     profile = get_object_or_404(Profile, id=profile_id)
-    current_url = request.build_absolute_uri()
     if profile.user == request.user:
         return HttpResponseBadRequest("You cannot follow/unfollow yourself.")
 
