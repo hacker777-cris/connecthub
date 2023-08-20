@@ -16,9 +16,12 @@ from django.views.generic import View
 from django.db.models import F
 from base.forms import ProfileUpdateForm
 from django.utils import timezone
+from django.urls import reverse
 
 
+def landingpage(request):
 
+    return render(request,'landingpage.html',{})
 @login_required(login_url='signin')
 def homepage(request):
     logged_in_user_profile = Profile.objects.get(user=request.user)
@@ -129,7 +132,7 @@ def follow_unfollow(request, profile_id):
         follower_obj = Follower(follower=request.user.profile, following=profile)
         follower_obj.save()
 
-    return redirect('profile', profile_id=profile.id)
+    return redirect(reverse('profile', kwargs={'profile_id': profile_id}))
 
 
 

@@ -1,11 +1,12 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from base.views import homepage,profile_view,follow_unfollow,create_post,sign_in,sign_up,logoutuser,like,profile_update
+from base.views import homepage,profile_view,follow_unfollow,create_post,sign_in,sign_up,logoutuser,like,profile_update,landingpage
 
 
 urlpatterns = [
-    path('',homepage,name='home'),
+    path('',landingpage,name='landing'),
+    path('home',homepage,name='home'),
     path('profile/<int:profile_id>/',profile_view,name='profile'),
     path('createpost',create_post,name='createpost'),
     path('signin', sign_in, name='signin'),

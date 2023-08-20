@@ -96,6 +96,7 @@
                                         </div>
                                     </a>
                                     <span class="block capitalize font-semibold">{{post.profile.username}}</span>
+                                    <h5>{{ post.created_date }}</h5>
                                 </div>
                                 <div>
                                     <a href="#" class="dropdown-toggle">
@@ -247,7 +248,7 @@
                                 </div>
                             </div>
             
-                            <a href="{% url 'follow_unfollow' profile_id=profile.id %}" class="border font-semibold px-4 py-1 rounded-full follow-button" data-profile-id="{{ profile.id }}"> Follow </a>
+                            <a href="{% url 'follow_unfollow' profile.id %}" class="border font-semibold px-4 py-1 rounded-full follow-button" data-profile-id="{{ profile.id }}"> Follow </a>
                         </div>
                     </div>
                     {% endfor %}
